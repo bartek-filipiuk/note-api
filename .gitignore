@@ -1,0 +1,15 @@
+.env
+node_modules/
+__pycache__/
+.next/
+dist/
+*.db
+*.sqlite
+.DS_Store
+uploads/
+.venv/
+venv/
+*.pyc
+.pytest_cache/
+htmlcov/
+.coverage
