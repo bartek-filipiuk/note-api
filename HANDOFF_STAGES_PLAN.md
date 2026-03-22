@@ -134,32 +134,32 @@
 **User Stories:** US-10
 
 ### Taski:
-- [ ] T1: Model Attachment — SQLAlchemy model (id, note_id FK, filename, original_filename, mime_type, size_bytes, created_at) (test → kod → verify)
-- [ ] T2: Endpoint POST /notes/{id}/attachments — upload obrazka (multipart/form-data) (test → kod → verify)
-- [ ] T3: Endpoint GET /notes/{id}/attachments — lista załączników notatki (test → kod → verify)
-- [ ] T4: Endpoint GET /notes/{id}/attachments/{attachment_id} — pobranie pliku (test → kod → verify)
-- [ ] T5: Endpoint DELETE /notes/{id}/attachments/{attachment_id} — usunięcie załącznika (tylko właściciel) (test → kod → verify)
-- [ ] T6: Katalog uploads/ poza kodem źródłowym, dodany do .gitignore (test → kod → verify)
+- [x] T1: Model Attachment — SQLAlchemy model (id, note_id FK, filename, original_filename, mime_type, size_bytes, created_at) (test → kod → verify)
+- [x] T2: Endpoint POST /notes/{id}/attachments — upload obrazka (multipart/form-data) (test → kod → verify)
+- [x] T3: Endpoint GET /notes/{id}/attachments — lista załączników notatki (test → kod → verify)
+- [x] T4: Endpoint GET /notes/{id}/attachments/{attachment_id} — pobranie pliku (test → kod → verify)
+- [x] T5: Endpoint DELETE /notes/{id}/attachments/{attachment_id} — usunięcie załącznika (tylko właściciel) (test → kod → verify)
+- [x] T6: Katalog uploads/ poza kodem źródłowym, dodany do .gitignore (test → kod → verify)
 
 ### Security (MANDATORY w każdym stage):
-- [ ] S1: Walidacja MIME type — tylko JPEG, PNG, GIF, WebP (PRD: upload złośliwych plików)
-- [ ] S2: Limit rozmiaru pliku — max 100 MB (PRD: upload złośliwych plików)
-- [ ] S3: Filename sanitization — unikalny UUID, oryginalna nazwa w DB (PRD: upload złośliwych plików)
-- [ ] S4: Tylko właściciel notatki może uploadować/usuwać załączniki (PRD: IDOR)
-- [ ] S5: Test security: upload pliku .exe → 400 (PRD: upload złośliwych plików)
-- [ ] S6: Test security: upload pliku > 100 MB → 413 (PRD: upload złośliwych plików)
-- [ ] S7: Test security: upload do cudzej notatki → 403 (PRD: IDOR)
+- [x] S1: Walidacja MIME type — tylko JPEG, PNG, GIF, WebP (PRD: upload złośliwych plików)
+- [x] S2: Limit rozmiaru pliku — max 100 MB (PRD: upload złośliwych plików)
+- [x] S3: Filename sanitization — unikalny UUID, oryginalna nazwa w DB (PRD: upload złośliwych plików)
+- [x] S4: Tylko właściciel notatki może uploadować/usuwać załączniki (PRD: IDOR)
+- [x] S5: Test security: upload pliku .exe → 400 (PRD: upload złośliwych plików)
+- [x] S6: Test security: upload pliku > 100 MB → 413 (PRD: upload złośliwych plików)
+- [x] S7: Test security: upload do cudzej notatki → 403 (PRD: IDOR)
 
 ### Docs (MANDATORY w każdym stage):
-- [ ] Update docs/CHANGELOG.md
-- [ ] Update docs/API.md (endpoints /notes/{id}/attachments)
-- [ ] Update docs/README.md (informacja o katalogu uploads/)
+- [x] Update docs/CHANGELOG.md
+- [x] Update docs/API.md (endpoints /notes/{id}/attachments)
+- [x] Update docs/README.md (informacja o katalogu uploads/)
 
 ### Stage Completion (MANDATORY — wykonaj NA KOŃCU stage'u):
-- [ ] Self-check: zakres stage zgodny z PRD (US-10 pokryte)
-- [ ] Self-check: brak hardcoded secrets w kodzie
-- [ ] Self-check: testy zielone (funkcjonalne + security)
-- [ ] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
+- [x] Self-check: zakres stage zgodny z PRD (US-10 pokryte)
+- [x] Self-check: brak hardcoded secrets w kodzie
+- [x] Self-check: testy zielone (funkcjonalne + security)
+- [x] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
 
 ---
 

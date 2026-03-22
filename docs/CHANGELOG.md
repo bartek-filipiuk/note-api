@@ -1,5 +1,15 @@
 # Changelog — Notes API
 
+## [Stage 5] - 2026-03-22
+
+- Model Attachment (id, note_id, filename, original_filename, mime_type, size_bytes)
+- POST /notes/{id}/attachments — upload obrazka (JPEG, PNG, GIF, WebP, max 100 MB)
+- GET /notes/{id}/attachments — lista załączników
+- GET /notes/{id}/attachments/{att_id} — pobranie pliku
+- DELETE /notes/{id}/attachments/{att_id} — usunięcie (tylko właściciel)
+- UUID filename sanitization, MIME type validation
+- Testy security: upload .exe → 400, upload do cudzej notatki → 403
+
 ## [Stage 4] - 2026-03-22
 
 - GET /notes?tag=nazwa — filtrowanie notatek po tagu

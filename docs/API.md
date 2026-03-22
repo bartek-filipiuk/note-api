@@ -127,3 +127,31 @@ Cofnięcie udostępnienia. Tylko właściciel.
 **Response:** `204 No Content`.
 
 **Błędy:** `403` nie właściciel, `404` share nie znaleziony.
+
+---
+
+## Attachments
+
+### POST /notes/{id}/attachments
+Upload obrazka do notatki (multipart/form-data). Tylko właściciel.
+
+**Dozwolone typy:** JPEG, PNG, GIF, WebP. Max 100 MB.
+
+**Response:** `201 Created` — obiekt attachment.
+
+**Błędy:** `400` niedozwolony typ, `403` nie właściciel, `413` za duży plik.
+
+### GET /notes/{id}/attachments
+Lista załączników notatki.
+
+**Response:** `200 OK` — lista attachmentów.
+
+### GET /notes/{id}/attachments/{att_id}
+Pobranie pliku załącznika.
+
+**Response:** `200 OK` — plik binarny z Content-Disposition.
+
+### DELETE /notes/{id}/attachments/{att_id}
+Usunięcie załącznika. Tylko właściciel notatki.
+
+**Response:** `204 No Content`.
