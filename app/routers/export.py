@@ -1,4 +1,5 @@
 import json
+from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import PlainTextResponse
@@ -24,11 +25,20 @@ def export_note(
     note = get_note_or_404(note_id, db)
     check_note_access(note, current_user, db)
 
-    tags = json.loads(note.tags) if note.tags else []
+    try:
+        tags = json.loads(note.tags) if note.tags else []
+        if not isinstance(tags, list):
+            tags = []
+    except json.JSONDecodeError:
+        tags = []
+
     tags_str = ", ".join(tags) if tags else "(brak)"
     content = f"Tytuł: {note.title}\nTagi: {tags_str}\n\n{note.content}\n"
 
+    safe_title = (note.title or "note").replace("\r", "").replace("\n", "").strip() or "note"
+    filename = quote(f"{safe_title}.txt")
+
     return PlainTextResponse(
         content=content,
-        headers={"Content-Disposition": f'attachment; filename="{note.title}.txt"'},
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{filename}"},
     )

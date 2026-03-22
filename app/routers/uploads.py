@@ -1,5 +1,8 @@
 import os
+import tempfile
 import uuid
+
+import anyio
 
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, status
 from fastapi.responses import FileResponse
@@ -68,37 +71,43 @@ async def upload_attachment(
             detail=f"File type not allowed. Allowed: {', '.join(ALLOWED_MIME_TYPES)}",
         )
 
-    # Chunked read with early size limit enforcement
-    chunks = []
-    total_size = 0
-    while True:
-        chunk = await file.read(CHUNK_SIZE)
-        if not chunk:
-            break
-        total_size += len(chunk)
-        if total_size > MAX_FILE_SIZE:
-            raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                detail=f"File too large. Max size: {MAX_FILE_SIZE} bytes",
-            )
-        chunks.append(chunk)
-
-    content = b"".join(chunks)
-
-    # Validate magic bytes against claimed MIME type
-    if not _validate_magic_bytes(content, file.content_type):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File content does not match declared type",
-        )
-
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     ext = os.path.splitext(file.filename or "file")[1]
     unique_filename = f"{uuid.uuid4().hex}{ext}"
     filepath = os.path.join(UPLOAD_DIR, unique_filename)
 
-    with open(filepath, "wb") as f:
-        f.write(content)
+    # Stream to temp file with early size limit enforcement
+    header = bytearray()
+    total_size = 0
+    tmp_fd, tmp_path = tempfile.mkstemp(dir=UPLOAD_DIR)
+    try:
+        with os.fdopen(tmp_fd, "wb") as tmp:
+            while True:
+                chunk = await file.read(CHUNK_SIZE)
+                if not chunk:
+                    break
+                total_size += len(chunk)
+                if total_size > MAX_FILE_SIZE:
+                    raise HTTPException(
+                        status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                        detail=f"File too large. Max size: {MAX_FILE_SIZE} bytes",
+                    )
+                if len(header) < 12:
+                    header.extend(chunk[: 12 - len(header)])
+                await anyio.to_thread.run_sync(tmp.write, chunk)
+
+        # Validate magic bytes against claimed MIME type
+        if not _validate_magic_bytes(bytes(header), file.content_type):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File content does not match declared type",
+            )
+
+        os.rename(tmp_path, filepath)
+    except Exception:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise
 
     attachment = Attachment(
         note_id=note_id,

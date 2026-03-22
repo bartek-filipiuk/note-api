@@ -1,8 +1,10 @@
 import json
+import os
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel
 from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -12,6 +14,8 @@ from app.models.note import Note
 from app.models.note_share import NoteShare
 from app.models.user import User
 from app.schemas.notes import NoteCreate, NoteResponse, NoteUpdate
+from app.models.attachment import Attachment
+from app.routers.uploads import UPLOAD_DIR
 from app.services.notes import check_note_access, check_note_owner, get_note_or_404
 
 router = APIRouter(prefix="/notes", tags=["notes"])
@@ -133,6 +137,12 @@ def delete_note(
 ):
     note = get_note_or_404(note_id, db)
     check_note_owner(note, current_user)
+    # Clean up attachment files from disk before deleting note
+    attachments = db.query(Attachment).filter(Attachment.note_id == note_id).all()
+    for att in attachments:
+        filepath = os.path.join(UPLOAD_DIR, att.filename)
+        if os.path.exists(filepath):
+            os.remove(filepath)
     db.delete(note)
     db.commit()
 
@@ -156,10 +166,20 @@ def share_note(
         NoteShare.shared_with_user_id == data.user_id,
     ).first()
     if existing:
-        return {"detail": "Already shared"}
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Already shared",
+        )
     share = NoteShare(note_id=note_id, shared_with_user_id=data.user_id)
     db.add(share)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Already shared",
+        ) from None
     return {"detail": "Note shared successfully"}
 
 
