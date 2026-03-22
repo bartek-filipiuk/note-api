@@ -197,28 +197,28 @@
 **User Stories:** (wszystkie — weryfikacja kompletności)
 
 ### Taski:
-- [ ] T1: Code review — przegląd wszystkich modułów pod kątem edge case'ów, spójności, czytelności (test → kod → verify)
-- [ ] T2: Finalizacja docs/README.md — kompletny Quick Start, pełna struktura katalogów (test → kod → verify)
-- [ ] T3: Finalizacja docs/API.md — kompletna dokumentacja wszystkich endpointów (test → kod → verify)
-- [ ] T4: Przygotowanie produkcyjnego docker-compose.yml i Dockerfile (test → kod → verify)
-- [ ] T5: Przygotowanie Caddyfile z reverse proxy i HTTPS (test → kod → verify)
+- [x] T1: Code review — przegląd wszystkich modułów pod kątem edge case'ów, spójności, czytelności (test → kod → verify)
+- [x] T2: Finalizacja docs/README.md — kompletny Quick Start, pełna struktura katalogów (test → kod → verify)
+- [x] T3: Finalizacja docs/API.md — kompletna dokumentacja wszystkich endpointów (test → kod → verify)
+- [x] T4: Przygotowanie produkcyjnego docker-compose.yml i Dockerfile (test → kod → verify)
+- [x] T5: Przygotowanie Caddyfile z reverse proxy i HTTPS (test → kod → verify)
 
 ### Security (MANDATORY w każdym stage):
-- [ ] S1: Przegląd nagłówków bezpieczeństwa — Content-Security-Policy, X-Content-Type-Options, X-Frame-Options (Baseline #6)
-- [ ] S2: Weryfikacja że wszystkie endpointy wymagają auth (oprócz /health, /auth/register, /auth/login) (Baseline #1)
-- [ ] S3: Finalne sprawdzenie: brak hardcoded secrets w całym kodzie (Baseline #5)
-- [ ] S4: Test security: smoke test — niepoprawny input, nieautoryzowane żądania, expired token
+- [x] S1: Przegląd nagłówków bezpieczeństwa — Content-Security-Policy, X-Content-Type-Options, X-Frame-Options (Baseline #6)
+- [x] S2: Weryfikacja że wszystkie endpointy wymagają auth (oprócz /health, /auth/register, /auth/login) (Baseline #1)
+- [x] S3: Finalne sprawdzenie: brak hardcoded secrets w całym kodzie (Baseline #5)
+- [x] S4: Test security: smoke test — niepoprawny input, nieautoryzowane żądania, expired token
 
 ### Docs (MANDATORY w każdym stage):
-- [ ] Update docs/CHANGELOG.md (wpis finalizacyjny)
-- [ ] Update docs/API.md (finalna weryfikacja kompletności)
-- [ ] Update docs/README.md (finalna weryfikacja)
+- [x] Update docs/CHANGELOG.md (wpis finalizacyjny)
+- [x] Update docs/API.md (finalna weryfikacja kompletności)
+- [x] Update docs/README.md (finalna weryfikacja)
 
 ### Stage Completion (MANDATORY — wykonaj NA KOŃCU stage'u):
-- [ ] Self-check: zakres stage zgodny z PRD (wszystkie US pokryte we wcześniejszych stage'ach)
-- [ ] Self-check: brak hardcoded secrets w kodzie
-- [ ] Self-check: testy zielone (funkcjonalne + security)
-- [ ] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
+- [x] Self-check: zakres stage zgodny z PRD (wszystkie US pokryte we wcześniejszych stage'ach)
+- [x] Self-check: brak hardcoded secrets w kodzie
+- [x] Self-check: testy zielone (funkcjonalne + security)
+- [x] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
 
 ---
 

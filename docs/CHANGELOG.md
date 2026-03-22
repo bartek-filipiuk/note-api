@@ -1,5 +1,12 @@
 # Changelog — Notes API
 
+## [Stage 7] - 2026-03-22
+
+- Security headers middleware (X-Content-Type-Options, X-Frame-Options, CSP, XSS Protection)
+- Finalizacja dokumentacji (README, API, CHANGELOG)
+- Produkcyjny Dockerfile (multi-stage) + docker-compose.yml + Caddyfile
+- Code review i weryfikacja kompletności
+
 ## [Stage 6] - 2026-03-22
 
 - GET /notes/{id}/export — eksport notatki do .txt (tytuł, treść, tagi)
