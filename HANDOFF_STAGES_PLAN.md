@@ -70,31 +70,31 @@
 **User Stories:** US-4, US-5, US-6, US-7
 
 ### Taski:
-- [ ] T1: Model Note — SQLAlchemy model (id, title, content, tags JSON, is_public, owner_id FK, created_at, updated_at) (test → kod → verify)
-- [ ] T2: Endpoint POST /notes — tworzenie notatki przez zalogowanego usera (test → kod → verify)
-- [ ] T3: Endpoint GET /notes — lista notatek zalogowanego usera (test → kod → verify)
-- [ ] T4: Endpoint GET /notes/{id} — szczegóły notatki (tylko własna, udostępniona lub publiczna) (test → kod → verify)
-- [ ] T5: Endpoint PUT /notes/{id} — edycja notatki (tylko właściciel) (test → kod → verify)
-- [ ] T6: Endpoint DELETE /notes/{id} — usuwanie notatki (tylko właściciel) (test → kod → verify)
+- [x] T1: Model Note — SQLAlchemy model (id, title, content, tags JSON, is_public, owner_id FK, created_at, updated_at) (test → kod → verify)
+- [x] T2: Endpoint POST /notes — tworzenie notatki przez zalogowanego usera (test → kod → verify)
+- [x] T3: Endpoint GET /notes — lista notatek zalogowanego usera (test → kod → verify)
+- [x] T4: Endpoint GET /notes/{id} — szczegóły notatki (tylko własna, udostępniona lub publiczna) (test → kod → verify)
+- [x] T5: Endpoint PUT /notes/{id} — edycja notatki (tylko właściciel) (test → kod → verify)
+- [x] T6: Endpoint DELETE /notes/{id} — usuwanie notatki (tylko właściciel) (test → kod → verify)
 
 ### Security (MANDATORY w każdym stage):
-- [ ] S1: Walidacja inputu — Pydantic schema: title wymagany, content wymagany, tags lista stringów (Baseline #2)
-- [ ] S2: Autoryzacja: każdy endpoint sprawdza owner_id — IDOR protection (PRD: IDOR)
-- [ ] S3: ORM z parametryzowanymi zapytaniami — brak raw SQL (Baseline #3)
-- [ ] S4: Test security: edycja cudzej notatki → 403 (PRD: IDOR)
-- [ ] S5: Test security: usunięcie cudzej notatki → 403 (PRD: IDOR)
-- [ ] S6: Test security: dostęp do prywatnej cudzej notatki → 403 (PRD: nieautoryzowany dostęp)
+- [x] S1: Walidacja inputu — Pydantic schema: title wymagany, content wymagany, tags lista stringów (Baseline #2)
+- [x] S2: Autoryzacja: każdy endpoint sprawdza owner_id — IDOR protection (PRD: IDOR)
+- [x] S3: ORM z parametryzowanymi zapytaniami — brak raw SQL (Baseline #3)
+- [x] S4: Test security: edycja cudzej notatki → 403 (PRD: IDOR)
+- [x] S5: Test security: usunięcie cudzej notatki → 403 (PRD: IDOR)
+- [x] S6: Test security: dostęp do prywatnej cudzej notatki → 403 (PRD: nieautoryzowany dostęp)
 
 ### Docs (MANDATORY w każdym stage):
-- [ ] Update docs/CHANGELOG.md
-- [ ] Update docs/API.md (endpoints /notes CRUD)
-- [ ] Update docs/README.md (jeśli zmieniła się struktura, Quick Start lub zależności)
+- [x] Update docs/CHANGELOG.md
+- [x] Update docs/API.md (endpoints /notes CRUD)
+- [x] Update docs/README.md (jeśli zmieniła się struktura, Quick Start lub zależności)
 
 ### Stage Completion (MANDATORY — wykonaj NA KOŃCU stage'u):
-- [ ] Self-check: zakres stage zgodny z PRD (US-4, US-5, US-6, US-7 pokryte)
-- [ ] Self-check: brak hardcoded secrets w kodzie
-- [ ] Self-check: testy zielone (funkcjonalne + security)
-- [ ] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
+- [x] Self-check: zakres stage zgodny z PRD (US-4, US-5, US-6, US-7 pokryte)
+- [x] Self-check: brak hardcoded secrets w kodzie
+- [x] Self-check: testy zielone (funkcjonalne + security)
+- [x] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
 
 ---
 

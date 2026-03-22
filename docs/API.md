@@ -57,3 +57,47 @@ Dane zalogowanego użytkownika.
 ```
 
 **Błędy:** `401` brak/nieprawidłowy/wygasły token.
+
+---
+
+## Notes
+
+Wszystkie endpointy wymagają `Authorization: Bearer <token>`.
+
+### POST /notes
+Tworzenie notatki.
+
+**Request body:**
+```json
+{"title": "Tytuł", "content": "Treść", "tags": ["tag1", "tag2"], "is_public": false}
+```
+
+**Response:** `201 Created` — obiekt notatki.
+
+### GET /notes
+Lista własnych notatek (+ udostępnionych i publicznych po implementacji sharing).
+
+**Response:** `200 OK` — lista notatek.
+
+### GET /notes/{id}
+Szczegóły notatki. Dostęp: właściciel, odbiorca share, lub publiczna.
+
+**Response:** `200 OK` — obiekt notatki.
+
+**Błędy:** `403` brak dostępu, `404` nie znaleziono.
+
+### PUT /notes/{id}
+Edycja notatki. Tylko właściciel.
+
+**Request body:** Częściowy update (title, content, tags, is_public — dowolne pola).
+
+**Response:** `200 OK` — zaktualizowana notatka.
+
+**Błędy:** `403` nie właściciel, `404` nie znaleziono.
+
+### DELETE /notes/{id}
+Usuwanie notatki. Tylko właściciel.
+
+**Response:** `204 No Content`.
+
+**Błędy:** `403` nie właściciel, `404` nie znaleziono.
