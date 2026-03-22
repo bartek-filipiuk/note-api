@@ -1,5 +1,14 @@
 # Changelog — Notes API
 
+## [Stage 4] - 2026-03-22
+
+- GET /notes?tag=nazwa — filtrowanie notatek po tagu
+- Model NoteShare (udostępnianie notatek)
+- POST /notes/{id}/share — udostępnienie notatki userowi
+- DELETE /notes/{id}/share/{user_id} — cofnięcie udostępnienia
+- GET /notes i GET /notes/{id} uwzględniają notatki udostępnione
+- Testy security: share cudzej notatki, edycja/usunięcie shared note
+
 ## [Stage 3] - 2026-03-22
 
 - Model Note (id, title, content, tags, is_public, owner_id, timestamps)

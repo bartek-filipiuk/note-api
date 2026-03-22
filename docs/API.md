@@ -101,3 +101,29 @@ Usuwanie notatki. Tylko właściciel.
 **Response:** `204 No Content`.
 
 **Błędy:** `403` nie właściciel, `404` nie znaleziono.
+
+### GET /notes?tag={tag}
+Filtrowanie notatek po tagu. Zwraca własne + udostępnione + publiczne.
+
+**Query params:** `tag` — nazwa tagu.
+
+**Response:** `200 OK` — lista notatek z danym tagiem.
+
+### POST /notes/{id}/share
+Udostępnienie notatki użytkownikowi. Tylko właściciel.
+
+**Request body:**
+```json
+{"user_id": 2}
+```
+
+**Response:** `201 Created`.
+
+**Błędy:** `403` nie właściciel, `404` nota/user nie znaleziony.
+
+### DELETE /notes/{id}/share/{user_id}
+Cofnięcie udostępnienia. Tylko właściciel.
+
+**Response:** `204 No Content`.
+
+**Błędy:** `403` nie właściciel, `404` share nie znaleziony.

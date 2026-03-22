@@ -103,29 +103,29 @@
 **User Stories:** US-8, US-9
 
 ### Taski:
-- [ ] T1: Endpoint GET /notes?tag=nazwa — filtrowanie notatek po tagu (własne + udostępnione + publiczne) (test → kod → verify)
-- [ ] T2: Model NoteShare — SQLAlchemy model (id, note_id FK, shared_with_user_id FK, created_at) (test → kod → verify)
-- [ ] T3: Endpoint POST /notes/{id}/share — udostępnienie notatki userowi po ID (tylko właściciel) (test → kod → verify)
-- [ ] T4: Endpoint DELETE /notes/{id}/share/{user_id} — cofnięcie udostępnienia (tylko właściciel) (test → kod → verify)
-- [ ] T5: Aktualizacja GET /notes i GET /notes/{id} — uwzględnienie notatek udostępnionych (test → kod → verify)
+- [x] T1: Endpoint GET /notes?tag=nazwa — filtrowanie notatek po tagu (własne + udostępnione + publiczne) (test → kod → verify)
+- [x] T2: Model NoteShare — SQLAlchemy model (id, note_id FK, shared_with_user_id FK, created_at) (test → kod → verify)
+- [x] T3: Endpoint POST /notes/{id}/share — udostępnienie notatki userowi po ID (tylko właściciel) (test → kod → verify)
+- [x] T4: Endpoint DELETE /notes/{id}/share/{user_id} — cofnięcie udostępnienia (tylko właściciel) (test → kod → verify)
+- [x] T5: Aktualizacja GET /notes i GET /notes/{id} — uwzględnienie notatek udostępnionych (test → kod → verify)
 
 ### Security (MANDATORY w każdym stage):
-- [ ] S1: Tylko właściciel może udostępniać/cofać udostępnienie — autoryzacja (PRD: IDOR)
-- [ ] S2: Walidacja: udostępnienie nieistniejącemu userowi → 404 (Baseline #2)
-- [ ] S3: Odbiorca nie może edytować/usuwać udostępnionej notatki → 403 (PRD: nieautoryzowany dostęp)
-- [ ] S4: Test security: share cudzej notatki → 403 (PRD: IDOR)
-- [ ] S5: Test security: edycja udostępnionej notatki przez odbiorcę → 403
+- [x] S1: Tylko właściciel może udostępniać/cofać udostępnienie — autoryzacja (PRD: IDOR)
+- [x] S2: Walidacja: udostępnienie nieistniejącemu userowi → 404 (Baseline #2)
+- [x] S3: Odbiorca nie może edytować/usuwać udostępnionej notatki → 403 (PRD: nieautoryzowany dostęp)
+- [x] S4: Test security: share cudzej notatki → 403 (PRD: IDOR)
+- [x] S5: Test security: edycja udostępnionej notatki przez odbiorcę → 403
 
 ### Docs (MANDATORY w każdym stage):
-- [ ] Update docs/CHANGELOG.md
-- [ ] Update docs/API.md (endpoints /notes?tag=, /notes/{id}/share)
-- [ ] Update docs/README.md (jeśli zmieniła się struktura, Quick Start lub zależności)
+- [x] Update docs/CHANGELOG.md
+- [x] Update docs/API.md (endpoints /notes?tag=, /notes/{id}/share)
+- [x] Update docs/README.md (jeśli zmieniła się struktura, Quick Start lub zależności)
 
 ### Stage Completion (MANDATORY — wykonaj NA KOŃCU stage'u):
-- [ ] Self-check: zakres stage zgodny z PRD (US-8, US-9 pokryte)
-- [ ] Self-check: brak hardcoded secrets w kodzie
-- [ ] Self-check: testy zielone (funkcjonalne + security)
-- [ ] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
+- [x] Self-check: zakres stage zgodny z PRD (US-8, US-9 pokryte)
+- [x] Self-check: brak hardcoded secrets w kodzie
+- [x] Self-check: testy zielone (funkcjonalne + security)
+- [x] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
 
 ---
 

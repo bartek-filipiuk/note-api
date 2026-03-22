@@ -1,15 +1,22 @@
 import json
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.note import Note
+from app.models.note_share import NoteShare
 from app.models.user import User
 from app.schemas.notes import NoteCreate, NoteResponse, NoteUpdate
 
 router = APIRouter(prefix="/notes", tags=["notes"])
+
+
+class ShareRequest(BaseModel):
+    user_id: int
 
 
 def _note_to_response(note: Note) -> dict:
@@ -32,10 +39,19 @@ def _get_note_or_404(note_id: int, db: Session) -> Note:
     return note
 
 
-def _check_note_access(note: Note, user: User) -> None:
+def _has_share_access(note_id: int, user_id: int, db: Session) -> bool:
+    return db.query(NoteShare).filter(
+        NoteShare.note_id == note_id,
+        NoteShare.shared_with_user_id == user_id,
+    ).first() is not None
+
+
+def _check_note_access(note: Note, user: User, db: Session) -> None:
     if note.owner_id == user.id:
         return
     if note.is_public:
+        return
+    if _has_share_access(note.id, user.id, db):
         return
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
 
@@ -66,10 +82,33 @@ def create_note(
 
 @router.get("", response_model=list[NoteResponse])
 def list_notes(
+    tag: str | None = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    notes = db.query(Note).filter(Note.owner_id == current_user.id).all()
+    # Get IDs of notes shared with current user
+    shared_note_ids = [
+        s.note_id
+        for s in db.query(NoteShare.note_id).filter(
+            NoteShare.shared_with_user_id == current_user.id
+        ).all()
+    ]
+
+    # Own notes + shared notes + public notes
+    query = db.query(Note).filter(
+        or_(
+            Note.owner_id == current_user.id,
+            Note.id.in_(shared_note_ids) if shared_note_ids else False,
+            Note.is_public == True,
+        )
+    )
+
+    notes = query.all()
+
+    # Filter by tag if provided
+    if tag:
+        notes = [n for n in notes if tag in (json.loads(n.tags) if n.tags else [])]
+
     return [_note_to_response(n) for n in notes]
 
 
@@ -80,7 +119,7 @@ def get_note(
     current_user: User = Depends(get_current_user),
 ):
     note = _get_note_or_404(note_id, db)
-    _check_note_access(note, current_user)
+    _check_note_access(note, current_user, db)
     return _note_to_response(note)
 
 
@@ -115,4 +154,47 @@ def delete_note(
     note = _get_note_or_404(note_id, db)
     _check_note_owner(note, current_user)
     db.delete(note)
+    db.commit()
+
+
+@router.post("/{note_id}/share", status_code=status.HTTP_201_CREATED)
+def share_note(
+    note_id: int,
+    data: ShareRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    note = _get_note_or_404(note_id, db)
+    _check_note_owner(note, current_user)
+    target_user = db.query(User).filter(User.id == data.user_id).first()
+    if not target_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    existing = db.query(NoteShare).filter(
+        NoteShare.note_id == note_id,
+        NoteShare.shared_with_user_id == data.user_id,
+    ).first()
+    if existing:
+        return {"detail": "Already shared"}
+    share = NoteShare(note_id=note_id, shared_with_user_id=data.user_id)
+    db.add(share)
+    db.commit()
+    return {"detail": "Note shared successfully"}
+
+
+@router.delete("/{note_id}/share/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def unshare_note(
+    note_id: int,
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    note = _get_note_or_404(note_id, db)
+    _check_note_owner(note, current_user)
+    share = db.query(NoteShare).filter(
+        NoteShare.note_id == note_id,
+        NoteShare.shared_with_user_id == user_id,
+    ).first()
+    if not share:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Share not found")
+    db.delete(share)
     db.commit()
