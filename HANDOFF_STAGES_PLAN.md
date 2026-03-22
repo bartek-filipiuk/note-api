@@ -7,27 +7,27 @@
 **User Stories:** (brak bezpośrednich US — infrastruktura pod wszystkie US)
 
 ### Taski:
-- [ ] T1: Scaffolding projektu — struktura katalogów (`app/`, `tests/`), `requirements.txt`, `app/main.py` z health endpoint `/health` (test → kod → verify)
-- [ ] T2: Konfiguracja SQLAlchemy + SQLite — `app/database.py`, `app/config.py` z pydantic-settings, `.env` z SECRET_KEY i DATABASE_URL (test → kod → verify)
-- [ ] T3: Integracja pytest — `tests/conftest.py` z TestClient i test DB (in-memory SQLite), test health endpointu (test → kod → verify)
-- [ ] T4: Dockerfile + docker-compose.yml (dev) — obraz Python, mount volume, uvicorn (test → kod → verify)
-- [ ] T5: CORS middleware — restrykcyjna allowlista (test → kod → verify)
+- [x] T1: Scaffolding projektu — struktura katalogów (`app/`, `tests/`), `requirements.txt`, `app/main.py` z health endpoint `/health` (test → kod → verify)
+- [x] T2: Konfiguracja SQLAlchemy + SQLite — `app/database.py`, `app/config.py` z pydantic-settings, `.env` z SECRET_KEY i DATABASE_URL (test → kod → verify)
+- [x] T3: Integracja pytest — `tests/conftest.py` z TestClient i test DB (in-memory SQLite), test health endpointu (test → kod → verify)
+- [x] T4: Dockerfile + docker-compose.yml (dev) — obraz Python, mount volume, uvicorn (test → kod → verify)
+- [x] T5: CORS middleware — restrykcyjna allowlista (test → kod → verify)
 
 ### Security (MANDATORY w każdym stage):
-- [ ] S1: Sekrety w `.env`, plik `.env` w `.gitignore` — brak hardcoded secrets (Baseline #5)
-- [ ] S2: CORS restrykcyjny — allowlista origins (Baseline #6)
-- [ ] S3: Test security: request z niedozwolonego origin → brak CORS headers (Baseline #6)
+- [x] S1: Sekrety w `.env`, plik `.env` w `.gitignore` — brak hardcoded secrets (Baseline #5)
+- [x] S2: CORS restrykcyjny — allowlista origins (Baseline #6)
+- [x] S3: Test security: request z niedozwolonego origin → brak CORS headers (Baseline #6)
 
 ### Docs (MANDATORY w każdym stage):
-- [ ] Update docs/CHANGELOG.md
-- [ ] Update docs/API.md (endpoint /health)
-- [ ] Update docs/README.md (Quick Start, struktura katalogów)
+- [x] Update docs/CHANGELOG.md
+- [x] Update docs/API.md (endpoint /health)
+- [x] Update docs/README.md (Quick Start, struktura katalogów)
 
 ### Stage Completion (MANDATORY — wykonaj NA KOŃCU stage'u):
-- [ ] Self-check: zakres stage zgodny z PRD (infrastruktura gotowa)
-- [ ] Self-check: brak hardcoded secrets w kodzie
-- [ ] Self-check: testy zielone (funkcjonalne + security)
-- [ ] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
+- [x] Self-check: zakres stage zgodny z PRD (infrastruktura gotowa)
+- [x] Self-check: brak hardcoded secrets w kodzie
+- [x] Self-check: testy zielone (funkcjonalne + security)
+- [x] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
 
 ---
 

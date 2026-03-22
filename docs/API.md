@@ -1,3 +1,11 @@
 # API Documentation — Notes API
 
-Endpoints będą dokumentowane w miarę implementacji.
+## Health
+
+### GET /health
+Sprawdza czy API działa.
+
+**Response:** `200 OK`
+```json
+{"status": "ok"}
+```
