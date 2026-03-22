@@ -6,6 +6,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.database import Base, get_db
 from app.main import app
+from app.routers.auth import limiter
 
 SQLALCHEMY_DATABASE_URL = "sqlite://"
 
@@ -37,6 +38,7 @@ def client(db_session):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
+    limiter.reset()
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()

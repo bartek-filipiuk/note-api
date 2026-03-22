@@ -36,32 +36,32 @@
 **User Stories:** US-1, US-2, US-3
 
 ### Taski:
-- [ ] T1: Model User — SQLAlchemy model (id, email, hashed_password, is_admin, created_at) + Alembic init (test → kod → verify)
-- [ ] T2: Endpoint POST /auth/register — rejestracja z walidacją email/hasło, zwrotka z tokenem JWT (test → kod → verify)
-- [ ] T3: Endpoint POST /auth/login — logowanie, zwrotka z tokenem JWT (test → kod → verify)
-- [ ] T4: Dependency `get_current_user` — dekodowanie JWT, pobieranie usera z DB (test → kod → verify)
-- [ ] T5: Endpoint GET /auth/whoami — dane zalogowanego usera (test → kod → verify)
+- [x] T1: Model User — SQLAlchemy model (id, email, hashed_password, is_admin, created_at) + Alembic init (test → kod → verify)
+- [x] T2: Endpoint POST /auth/register — rejestracja z walidacją email/hasło, zwrotka z tokenem JWT (test → kod → verify)
+- [x] T3: Endpoint POST /auth/login — logowanie, zwrotka z tokenem JWT (test → kod → verify)
+- [x] T4: Dependency `get_current_user` — dekodowanie JWT, pobieranie usera z DB (test → kod → verify)
+- [x] T5: Endpoint GET /auth/whoami — dane zalogowanego usera (test → kod → verify)
 
 ### Security (MANDATORY w każdym stage):
-- [ ] S1: Hasła hashowane bcrypt via passlib — nigdy plaintext (Baseline #7)
-- [ ] S2: JWT z TTL (30 min) — token expiry weryfikowany (Baseline #7)
-- [ ] S3: Walidacja inputu rejestracji — Pydantic schema: email format, hasło min. 8 znaków (Baseline #2)
-- [ ] S4: Rate limiting na POST /auth/register i POST /auth/login — slowapi, max 5 req/min per IP (Baseline #8, PRD: brute force)
-- [ ] S5: Test security: rejestracja z duplikatem email → 409 (Baseline #2)
-- [ ] S6: Test security: login z błędnym hasłem → 401 (Baseline #7)
-- [ ] S7: Test security: request bez tokena na /auth/whoami → 401 (Baseline #1)
-- [ ] S8: Test security: request z wygasłym tokenem → 401 (Baseline #7)
+- [x] S1: Hasła hashowane bcrypt via passlib — nigdy plaintext (Baseline #7)
+- [x] S2: JWT z TTL (30 min) — token expiry weryfikowany (Baseline #7)
+- [x] S3: Walidacja inputu rejestracji — Pydantic schema: email format, hasło min. 8 znaków (Baseline #2)
+- [x] S4: Rate limiting na POST /auth/register i POST /auth/login — slowapi, max 5 req/min per IP (Baseline #8, PRD: brute force)
+- [x] S5: Test security: rejestracja z duplikatem email → 409 (Baseline #2)
+- [x] S6: Test security: login z błędnym hasłem → 401 (Baseline #7)
+- [x] S7: Test security: request bez tokena na /auth/whoami → 401 (Baseline #1)
+- [x] S8: Test security: request z wygasłym tokenem → 401 (Baseline #7)
 
 ### Docs (MANDATORY w każdym stage):
-- [ ] Update docs/CHANGELOG.md
-- [ ] Update docs/API.md (endpoints /auth/register, /auth/login, /auth/whoami)
-- [ ] Update docs/README.md (jeśli zmieniła się struktura, Quick Start lub zależności)
+- [x] Update docs/CHANGELOG.md
+- [x] Update docs/API.md (endpoints /auth/register, /auth/login, /auth/whoami)
+- [x] Update docs/README.md (jeśli zmieniła się struktura, Quick Start lub zależności)
 
 ### Stage Completion (MANDATORY — wykonaj NA KOŃCU stage'u):
-- [ ] Self-check: zakres stage zgodny z PRD (US-1, US-2, US-3 pokryte)
-- [ ] Self-check: brak hardcoded secrets w kodzie
-- [ ] Self-check: testy zielone (funkcjonalne + security)
-- [ ] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
+- [x] Self-check: zakres stage zgodny z PRD (US-1, US-2, US-3 pokryte)
+- [x] Self-check: brak hardcoded secrets w kodzie
+- [x] Self-check: testy zielone (funkcjonalne + security)
+- [x] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
 
 ---
 
