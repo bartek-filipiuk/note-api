@@ -1,5 +1,12 @@
 # Changelog — Notes API
 
+## [Stage 6] - 2026-03-22
+
+- GET /notes/{id}/export — eksport notatki do .txt (tytuł, treść, tagi)
+- GET /admin/users — lista userów (tylko admin)
+- Dependency require_admin — reużywalna zależność
+- Testy security: eksport cudzej notatki → 403, admin endpoint bez uprawnień → 403/401
+
 ## [Stage 5] - 2026-03-22
 
 - Model Attachment (id, note_id, filename, original_filename, mime_type, size_bytes)

@@ -155,3 +155,28 @@ Pobranie pliku załącznika.
 Usunięcie załącznika. Tylko właściciel notatki.
 
 **Response:** `204 No Content`.
+
+---
+
+## Export
+
+### GET /notes/{id}/export
+Eksport notatki do pliku `.txt`. Dostęp: właściciel, odbiorca share, publiczna.
+
+**Response:** `200 OK` — plik `.txt` z Content-Disposition attachment.
+
+**Błędy:** `403` brak dostępu, `404` nie znaleziono.
+
+---
+
+## Admin
+
+### GET /admin/users
+Lista wszystkich zarejestrowanych użytkowników. Tylko admin (`is_admin=true`).
+
+**Response:** `200 OK`
+```json
+[{"id": 1, "email": "user@example.com", "is_admin": false, "created_at": "2026-03-22T..."}]
+```
+
+**Błędy:** `401` brak tokena, `403` nie admin.

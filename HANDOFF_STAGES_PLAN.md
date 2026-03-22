@@ -168,27 +168,27 @@
 **User Stories:** US-11, US-12
 
 ### Taski:
-- [ ] T1: Endpoint GET /notes/{id}/export — generowanie pliku .txt (tytuł, treść, tagi), Content-Disposition attachment (test → kod → verify)
-- [ ] T2: Endpoint GET /admin/users — lista userów (id, email, created_at), dostęp tylko is_admin (test → kod → verify)
-- [ ] T3: Dependency `require_admin` — sprawdzenie is_admin, reużywalna zależność (test → kod → verify)
+- [x] T1: Endpoint GET /notes/{id}/export — generowanie pliku .txt (tytuł, treść, tagi), Content-Disposition attachment (test → kod → verify)
+- [x] T2: Endpoint GET /admin/users — lista userów (id, email, created_at), dostęp tylko is_admin (test → kod → verify)
+- [x] T3: Dependency `require_admin` — sprawdzenie is_admin, reużywalna zależność (test → kod → verify)
 
 ### Security (MANDATORY w każdym stage):
-- [ ] S1: Eksport tylko własnej notatki lub udostępnionej — autoryzacja (PRD: IDOR)
-- [ ] S2: Endpoint admina zabezpieczony flagą is_admin — zwykły user → 403 (PRD: ekspozycja danych admina)
-- [ ] S3: Test security: eksport cudzej prywatnej notatki → 403 (PRD: IDOR)
-- [ ] S4: Test security: GET /admin/users jako zwykły user → 403 (PRD: ekspozycja danych admina)
-- [ ] S5: Test security: GET /admin/users bez tokena → 401 (Baseline #1)
+- [x] S1: Eksport tylko własnej notatki lub udostępnionej — autoryzacja (PRD: IDOR)
+- [x] S2: Endpoint admina zabezpieczony flagą is_admin — zwykły user → 403 (PRD: ekspozycja danych admina)
+- [x] S3: Test security: eksport cudzej prywatnej notatki → 403 (PRD: IDOR)
+- [x] S4: Test security: GET /admin/users jako zwykły user → 403 (PRD: ekspozycja danych admina)
+- [x] S5: Test security: GET /admin/users bez tokena → 401 (Baseline #1)
 
 ### Docs (MANDATORY w każdym stage):
-- [ ] Update docs/CHANGELOG.md
-- [ ] Update docs/API.md (endpoints /notes/{id}/export, /admin/users)
-- [ ] Update docs/README.md (jeśli zmieniła się struktura, Quick Start lub zależności)
+- [x] Update docs/CHANGELOG.md
+- [x] Update docs/API.md (endpoints /notes/{id}/export, /admin/users)
+- [x] Update docs/README.md (jeśli zmieniła się struktura, Quick Start lub zależności)
 
 ### Stage Completion (MANDATORY — wykonaj NA KOŃCU stage'u):
-- [ ] Self-check: zakres stage zgodny z PRD (US-11, US-12 pokryte)
-- [ ] Self-check: brak hardcoded secrets w kodzie
-- [ ] Self-check: testy zielone (funkcjonalne + security)
-- [ ] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
+- [x] Self-check: zakres stage zgodny z PRD (US-11, US-12 pokryte)
+- [x] Self-check: brak hardcoded secrets w kodzie
+- [x] Self-check: testy zielone (funkcjonalne + security)
+- [x] Zaktualizuj HANDOFF: WSZYSTKIE checkboxy tego stage → [x]
 
 ---
 

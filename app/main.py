@@ -5,7 +5,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.config import settings
-from app.routers import auth, notes, uploads
+from app.routers import admin, auth, export, notes, uploads
 from app.routers.auth import limiter
 
 app = FastAPI(title="Notes API", version="0.1.0")
@@ -24,6 +24,8 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(notes.router)
 app.include_router(uploads.router)
+app.include_router(export.router)
+app.include_router(admin.router)
 
 
 @app.get("/health")
