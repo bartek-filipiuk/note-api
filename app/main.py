@@ -4,8 +4,12 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.config import settings
+from app.database import Base, engine
+from app.models import Attachment, Note, NoteShare, User  # noqa: F401
 from app.routers import admin, auth, export, notes, uploads
 from app.routers.auth import limiter
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Notes API", version="0.1.0")
 app.state.limiter = limiter
