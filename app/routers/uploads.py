@@ -1,22 +1,39 @@
 import os
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, status
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import get_current_user
+from app.limiter import limiter
 from app.models.attachment import Attachment
-from app.models.note import Note
 from app.models.user import User
+from app.services.notes import check_note_access, check_note_owner, get_note_or_404
 
 router = APIRouter(tags=["attachments"])
 
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
 ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100 MB
+CHUNK_SIZE = 1024 * 1024  # 1 MB
+
+MAGIC_BYTES = {
+    "image/jpeg": [b"\xff\xd8\xff"],
+    "image/png": [b"\x89PNG\r\n\x1a\n"],
+    "image/gif": [b"GIF87a", b"GIF89a"],
+}
+
+
+def _validate_magic_bytes(content: bytes, claimed_mime: str) -> bool:
+    if claimed_mime == "image/webp":
+        return len(content) >= 12 and content[:4] == b"RIFF" and content[8:12] == b"WEBP"
+    signatures = MAGIC_BYTES.get(claimed_mime)
+    if signatures is None:
+        return False
+    return any(content.startswith(sig) for sig in signatures)
 
 
 class AttachmentResponse(BaseModel):
@@ -29,31 +46,21 @@ class AttachmentResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
-def _get_note_or_404(note_id: int, db: Session) -> Note:
-    note = db.query(Note).filter(Note.id == note_id).first()
-    if not note:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
-    return note
-
-
-def _check_note_owner(note: Note, user: User) -> None:
-    if note.owner_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
-
-
 @router.post(
     "/notes/{note_id}/attachments",
     response_model=AttachmentResponse,
     status_code=status.HTTP_201_CREATED,
 )
+@limiter.limit("10/minute")
 async def upload_attachment(
+    request: Request,
     note_id: int,
     file: UploadFile,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    note = _get_note_or_404(note_id, db)
-    _check_note_owner(note, current_user)
+    note = get_note_or_404(note_id, db)
+    check_note_owner(note, current_user)
 
     if file.content_type not in ALLOWED_MIME_TYPES:
         raise HTTPException(
@@ -61,11 +68,28 @@ async def upload_attachment(
             detail=f"File type not allowed. Allowed: {', '.join(ALLOWED_MIME_TYPES)}",
         )
 
-    content = await file.read()
-    if len(content) > MAX_FILE_SIZE:
+    # Chunked read with early size limit enforcement
+    chunks = []
+    total_size = 0
+    while True:
+        chunk = await file.read(CHUNK_SIZE)
+        if not chunk:
+            break
+        total_size += len(chunk)
+        if total_size > MAX_FILE_SIZE:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail=f"File too large. Max size: {MAX_FILE_SIZE} bytes",
+            )
+        chunks.append(chunk)
+
+    content = b"".join(chunks)
+
+    # Validate magic bytes against claimed MIME type
+    if not _validate_magic_bytes(content, file.content_type):
         raise HTTPException(
-            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail=f"File too large. Max size: {MAX_FILE_SIZE} bytes",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File content does not match declared type",
         )
 
     os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -81,7 +105,7 @@ async def upload_attachment(
         filename=unique_filename,
         original_filename=file.filename or "unknown",
         mime_type=file.content_type,
-        size_bytes=len(content),
+        size_bytes=total_size,
     )
     db.add(attachment)
     db.commit()
@@ -90,24 +114,30 @@ async def upload_attachment(
 
 
 @router.get("/notes/{note_id}/attachments", response_model=list[AttachmentResponse])
+@limiter.limit("30/minute")
 def list_attachments(
+    request: Request,
     note_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    _get_note_or_404(note_id, db)
+    note = get_note_or_404(note_id, db)
+    check_note_access(note, current_user, db)
     attachments = db.query(Attachment).filter(Attachment.note_id == note_id).all()
     return attachments
 
 
 @router.get("/notes/{note_id}/attachments/{attachment_id}")
+@limiter.limit("30/minute")
 def download_attachment(
+    request: Request,
     note_id: int,
     attachment_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    _get_note_or_404(note_id, db)
+    note = get_note_or_404(note_id, db)
+    check_note_access(note, current_user, db)
     attachment = db.query(Attachment).filter(
         Attachment.id == attachment_id,
         Attachment.note_id == note_id,
@@ -125,14 +155,16 @@ def download_attachment(
 
 
 @router.delete("/notes/{note_id}/attachments/{attachment_id}", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit("10/minute")
 def delete_attachment(
+    request: Request,
     note_id: int,
     attachment_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    note = _get_note_or_404(note_id, db)
-    _check_note_owner(note, current_user)
+    note = get_note_or_404(note_id, db)
+    check_note_owner(note, current_user)
     attachment = db.query(Attachment).filter(
         Attachment.id == attachment_id,
         Attachment.note_id == note_id,

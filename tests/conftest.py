@@ -1,3 +1,7 @@
+import os
+
+os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only")
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -5,9 +9,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.database import Base, get_db
+from app.limiter import limiter
 from app.main import app
-from app.models import Note, User  # noqa: F401 - ensure tables are created
-from app.routers.auth import limiter
+from app.models import Attachment, Note, NoteShare, User  # noqa: F401
 
 SQLALCHEMY_DATABASE_URL = "sqlite://"
 

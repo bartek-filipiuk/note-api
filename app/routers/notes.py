@@ -1,16 +1,18 @@
 import json
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import get_current_user
+from app.limiter import limiter
 from app.models.note import Note
 from app.models.note_share import NoteShare
 from app.models.user import User
 from app.schemas.notes import NoteCreate, NoteResponse, NoteUpdate
+from app.services.notes import check_note_access, check_note_owner, get_note_or_404
 
 router = APIRouter(prefix="/notes", tags=["notes"])
 
@@ -32,37 +34,10 @@ def _note_to_response(note: Note) -> dict:
     }
 
 
-def _get_note_or_404(note_id: int, db: Session) -> Note:
-    note = db.query(Note).filter(Note.id == note_id).first()
-    if not note:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
-    return note
-
-
-def _has_share_access(note_id: int, user_id: int, db: Session) -> bool:
-    return db.query(NoteShare).filter(
-        NoteShare.note_id == note_id,
-        NoteShare.shared_with_user_id == user_id,
-    ).first() is not None
-
-
-def _check_note_access(note: Note, user: User, db: Session) -> None:
-    if note.owner_id == user.id:
-        return
-    if note.is_public:
-        return
-    if _has_share_access(note.id, user.id, db):
-        return
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
-
-
-def _check_note_owner(note: Note, user: User) -> None:
-    if note.owner_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
-
-
 @router.post("", response_model=NoteResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("30/minute")
 def create_note(
+    request: Request,
     data: NoteCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -81,12 +56,13 @@ def create_note(
 
 
 @router.get("", response_model=list[NoteResponse])
+@limiter.limit("60/minute")
 def list_notes(
+    request: Request,
     tag: str | None = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    # Get IDs of notes shared with current user
     shared_note_ids = [
         s.note_id
         for s in db.query(NoteShare.note_id).filter(
@@ -94,7 +70,6 @@ def list_notes(
         ).all()
     ]
 
-    # Own notes + shared notes + public notes
     query = db.query(Note).filter(
         or_(
             Note.owner_id == current_user.id,
@@ -105,7 +80,6 @@ def list_notes(
 
     notes = query.all()
 
-    # Filter by tag if provided
     if tag:
         notes = [n for n in notes if tag in (json.loads(n.tags) if n.tags else [])]
 
@@ -113,25 +87,29 @@ def list_notes(
 
 
 @router.get("/{note_id}", response_model=NoteResponse)
+@limiter.limit("60/minute")
 def get_note(
+    request: Request,
     note_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    note = _get_note_or_404(note_id, db)
-    _check_note_access(note, current_user, db)
+    note = get_note_or_404(note_id, db)
+    check_note_access(note, current_user, db)
     return _note_to_response(note)
 
 
 @router.put("/{note_id}", response_model=NoteResponse)
+@limiter.limit("30/minute")
 def update_note(
+    request: Request,
     note_id: int,
     data: NoteUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    note = _get_note_or_404(note_id, db)
-    _check_note_owner(note, current_user)
+    note = get_note_or_404(note_id, db)
+    check_note_owner(note, current_user)
     if data.title is not None:
         note.title = data.title
     if data.content is not None:
@@ -146,26 +124,30 @@ def update_note(
 
 
 @router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit("30/minute")
 def delete_note(
+    request: Request,
     note_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    note = _get_note_or_404(note_id, db)
-    _check_note_owner(note, current_user)
+    note = get_note_or_404(note_id, db)
+    check_note_owner(note, current_user)
     db.delete(note)
     db.commit()
 
 
 @router.post("/{note_id}/share", status_code=status.HTTP_201_CREATED)
+@limiter.limit("30/minute")
 def share_note(
+    request: Request,
     note_id: int,
     data: ShareRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    note = _get_note_or_404(note_id, db)
-    _check_note_owner(note, current_user)
+    note = get_note_or_404(note_id, db)
+    check_note_owner(note, current_user)
     target_user = db.query(User).filter(User.id == data.user_id).first()
     if not target_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -182,14 +164,16 @@ def share_note(
 
 
 @router.delete("/{note_id}/share/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit("30/minute")
 def unshare_note(
+    request: Request,
     note_id: int,
     user_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    note = _get_note_or_404(note_id, db)
-    _check_note_owner(note, current_user)
+    note = get_note_or_404(note_id, db)
+    check_note_owner(note, current_user)
     share = db.query(NoteShare).filter(
         NoteShare.note_id == note_id,
         NoteShare.shared_with_user_id == user_id,

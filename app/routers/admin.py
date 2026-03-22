@@ -1,21 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import get_current_user
+from app.limiter import limiter
 from app.models.user import User
 
 router = APIRouter(prefix="/admin", tags=["admin"])
-
-
-class AdminUserResponse(BaseModel):
-    id: int
-    email: str
-    is_admin: bool
-    created_at: str
-
-    model_config = {"from_attributes": True}
 
 
 def require_admin(current_user: User = Depends(get_current_user)) -> User:
@@ -28,7 +19,9 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 
 @router.get("/users")
+@limiter.limit("10/minute")
 def list_users(
+    request: Request,
     db: Session = Depends(get_db),
     admin: User = Depends(require_admin),
 ):
